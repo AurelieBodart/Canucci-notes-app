@@ -15,9 +15,7 @@ const NoteForm: React.FC<NoteFormProps> = ({
   const minLength = 50;
   const maxLength = 500;
 
-  const getCharCount = () => note.length;
-
-  const charCount = getCharCount();
+  const charCount = note.length;
   const progress = Math.min((charCount / maxLength) * 100, 100);
 
   const handleSave = () => {
@@ -64,7 +62,7 @@ const NoteForm: React.FC<NoteFormProps> = ({
           <div className="flex gap-3">
             <button
               onClick={handleSave}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               disabled={charCount < minLength || charCount > maxLength}
             >
               {initialValue ? 'Update Note' : 'Save Note'}

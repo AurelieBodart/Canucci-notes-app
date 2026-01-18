@@ -83,7 +83,7 @@ useEffect(() => {
     return note.status === filter;
   });
 
-  const editingNote = editingNoteId ? notes.find(n => n.id === editingNoteId) : null;
+  const editingNote = editingNoteId ? notes.find(note => note.id === editingNoteId) : null;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -159,7 +159,6 @@ useEffect(() => {
         )}
 
         {/* Notes List */}
-
         {!editingNoteId && !showForm &&
           <div className="space-y-4">
             {filteredNotes.length === 0 ? (
