@@ -32,6 +32,7 @@ useEffect(() => {
     const newNote: Note = {
       id: Date.now().toString(),
       content,
+      status: 'pending'
     };
     setNotes([newNote, ...notes]);
     setShowForm(false);
@@ -62,8 +63,15 @@ useEffect(() => {
     setNotes(notes.filter(note => note.id !== id));
   };
 
-  const editingNote = editingNoteId ? notes.find(n => n.id === editingNoteId) : null;
+  const handleToggleStatus = (id: string) => {
+    setNotes(notes.map(note => 
+      note.id === id 
+        ? { ...note, status: note.status === 'pending' ? 'approved' : 'pending' }
+        : note
+    ));
+  };
 
+  const editingNote = editingNoteId ? notes.find(n => n.id === editingNoteId) : null;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -112,11 +120,24 @@ useEffect(() => {
             notes.map((note) => (
               <div
                 key={note.id}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-              >
+                className={`rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow ${
+                  note.status === 'approved' 
+                    ? 'bg-green-50 border-2 border-green-300' 
+                    : 'bg-white'
+                }`}              >
                 <div className="flex justify-between items-start gap-4">
+                  <input
+                      type="checkbox"
+                      checked={note.status === 'approved'}
+                      onChange={() => handleToggleStatus(note.id)}
+                      className="mt-1 w-5 h-5 rounded-full border-2 border-gray-300 cursor-pointer accent-green-600"
+                    />
+                  
+                  
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 whitespace-pre-wrap break-words">{note.content}</p>
+                    <p className={`text-gray-800 whitespace-pre-wrap break-words ${
+                      note.status === 'approved' ? 'line-through' : ''
+                    }`}>{note.content}</p>
                   </div>
 
                   <div className="flex gap-2">
