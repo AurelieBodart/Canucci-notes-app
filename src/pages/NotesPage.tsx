@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import NoteForm from '../components/NoteForm';
 import type { Note } from '../types';
-
-
 
 const NotesPage: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+
+ // Load notes from memory on mount
+ useEffect(() => {
+  const savedNotes = localStorage.getItem('myNotes');
+  if (savedNotes) {
+    try {
+      const parsed = JSON.parse(savedNotes);
+      setNotes(parsed);
+    } catch (error) {
+      console.error('Failed to load notes:', error);
+    }
+  }
+}, []);
+
+// Save notes to memory whenever they change
+useEffect(() => {
+  if (notes.length > 0) {
+    localStorage.setItem('myNotes', JSON.stringify(notes));
+  }
+}, [notes]);
 
   const handleAddNote = (content: string) => {
     const newNote: Note = {
@@ -18,13 +37,41 @@ const NotesPage: React.FC = () => {
     setShowForm(false);
   };
 
+  const handleUpdateNote = (content: string) => {
+    if (editingNoteId) {
+      setNotes(notes.map(note => 
+        note.id === editingNoteId 
+          ? { ...note, content }
+          : note
+      ));
+      setEditingNoteId(null);
+    }
+  };
+
+  const handleEditNote = (id: string) => {
+    setEditingNoteId(id);
+    setShowForm(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNoteId(null);
+  };
+
+
+  const handleDeleteNote = (id: string) => {
+    setNotes(notes.filter(note => note.id !== id));
+  };
+
+  const editingNote = editingNoteId ? notes.find(n => n.id === editingNoteId) : null;
+
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">My Notes</h1>
 
         {/* Add Note Button */}
-        {!showForm && (
+        {!showForm && !editingNoteId && (
           <button
             onClick={() => setShowForm(true)}
             className="mb-6 w-full bg-indigo-500 hover:bg-indigo-700 text-white font-medium py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -34,12 +81,23 @@ const NotesPage: React.FC = () => {
           </button>
         )}
 
-        {/* Note Form */}
+        {/* Note Form for Adding */}
         {showForm && (
           <div className="mb-6">
             <NoteForm
               onSave={handleAddNote}
               onCancel={() => setShowForm(false)}
+            />
+          </div>
+        )}
+
+         {/* Note Form for Editing */}
+         {editingNoteId && editingNote && (
+          <div className="mb-6">
+            <NoteForm
+              onSave={handleUpdateNote}
+              onCancel={handleCancelEdit}
+              initialValue={editingNote.content}
             />
           </div>
         )}
@@ -59,6 +117,23 @@ const NotesPage: React.FC = () => {
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex-1 min-w-0">
                     <p className="text-gray-800 whitespace-pre-wrap break-words">{note.content}</p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditNote(note.id)}
+                      className="text-gray-400 hover:text-blue-600 transition-colors p-2"
+                      title="Edit note"
+                    >
+                      <Edit2 size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteNote(note.id)}
+                      className="text-gray-400 hover:text-red-600 transition-colors p-2"
+                      title="Delete note"
+                    >
+                      <Trash2 size={20} />
+                    </button>
                   </div>
                 </div>
               </div>
