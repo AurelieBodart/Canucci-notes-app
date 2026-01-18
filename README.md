@@ -19,24 +19,6 @@ npm run dev
 
 The application will be available at `http://localhost:3000` (or another port if 3000 is taken).
 
-## Building for Production
-
-To build the application for production:
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist` directory.
-
-## Preview Production Build
-
-To preview the production build locally:
-
-```bash
-npm run preview
-```
-
 ## Project Structure
 
 - `src/pages/NotesPage.tsx` - Main notes page component
